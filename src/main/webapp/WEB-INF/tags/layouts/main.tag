@@ -4,29 +4,31 @@
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layouts" %>
 <%@ attribute name="title" %>
+<fmt:setBundle basename="messages.commons" />
 <c:url var="cssUrl" value="/css/" />
 <c:url var="jsUrl" value="/js/" />
-<c:url var="searchUrl" value="/board/search/ "/>
-<c:url var="logoUrl" value="images/logo.png" />
-<fmt:setBundle basename="messages.commons" />
+<c:url var="homeUrl" value="/" />
+<c:url var="searchUrl" value="/board/search" />
+<c:url var="logoUrl" value="/images/logo.png" />
+
 <layout:common title="${title}">
     <jsp:attribute name="header">
         <section class="site-top">
             <div class="layout-width inner">
                 <div class="left">
-                    <a herf="<c:url value='/' />">
+                    <a href="${homeUrl}">
                         <i class="xi-home-o"></i>
-                        <fmt:message key="홈"/>
+                        <fmt:message key="홈" />
                     </a>
                 </div>
                 <div class="right">
                     <a href="<c:url value='/member/join' />">
                         <i class="xi-user-plus-o"></i>
-                        <fmt:message key="회원가입"/>
+                        <fmt:message key="회원가입" />
                     </a>
-                    <a href="<c:url value="/member/login"/> ">
+                    <a href="<c:url value='/member/login' />">
                         <i class="xi-log-in"></i>
-                        <fmt:message key="로그인"/>
+                        <fmt:message key="로그인" />
                     </a>
                 </div>
             </div>
@@ -35,12 +37,12 @@
             <div class="layout-width inner">
                 <div class="left">
                     <a href="${homeUrl}" class="logo">
-                        <img src="${logoUrl}" alt="<fmt:message key="로고"/>">
+                        <img src="${logoUrl}" alt="<fmt:message key='로고' />">
                     </a>
                 </div>
                 <div class="right">
                     <form class="search-box" method="GET" action="${searchUrl}" autocomplete="off">
-                        <input type="text" name="keyword" placeholder="<fmt:message key="검색어를_입력하세요." />">
+                        <input type="text" name="keyword" placeholder="<fmt:message key='검색어를_입력하세요.' />">
                         <button type="submit">
                             <i class="xi-search"></i>
                         </button>
@@ -60,7 +62,7 @@
     </jsp:attribute>
     <jsp:attribute name="footer">
         <section class="layout-width inner">
-            메인 레이아웃 하단 영역
+            메인 레이아웃 하단 영역!
         </section>
     </jsp:attribute>
     <jsp:attribute name="commonCss">
