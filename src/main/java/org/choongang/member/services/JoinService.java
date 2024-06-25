@@ -4,15 +4,17 @@ import lombok.RequiredArgsConstructor;
 import org.choongang.global.config.annotations.Service;
 import org.choongang.member.controllers.RequestJoin;
 import org.choongang.member.mappers.MemberMapper;
-import org.choongang.member.validators.JoinValidators;
+import org.choongang.member.validators.JoinValidator;
 
 @Service
 @RequiredArgsConstructor
 public class JoinService {
-    private final JoinValidators validators;
+    private final JoinValidator validator;
     private final MemberMapper mapper;
 
-    public void process(RequestJoin form){
-        validators.check(form);
+    public void process(RequestJoin form) {
+        validator.check(form);
+
+
     }
 }

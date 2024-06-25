@@ -2,8 +2,8 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layouts" %>
-<fmt:message var="pageTitle" key='회원가입' />
 <fmt:setBundle basename="messages.commons" />
+<fmt:message var="pageTitle" key='회원가입' />
 <c:url var="actionUrl" value="/member/join" />
 
 <layout:main title="${pageTitle}">
@@ -44,9 +44,10 @@
             </dl>
             <div class="terms">
                 <div class="tit">
-                    <fmt:message key="약관_동의"/>
+                    <fmt:message key="약관_동의" />
                 </div>
                 <div class="termsContent">약관 내용...</div>
+
                 <input type="checkbox" name="termsAgree" value="true" id="termsAgree">
                 <label for="termsAgree">
                     <fmt:message key="약관에_동의합니다." />
@@ -62,5 +63,4 @@
             </div>
         </form>
     </section>
-
 </layout:main>
