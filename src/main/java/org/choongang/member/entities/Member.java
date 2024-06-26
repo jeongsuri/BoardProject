@@ -12,7 +12,7 @@ public class Member {
     private long userNo;
     private String email;
     private String password;
-    private String username;
+    private String userName;
     private UserType userType = UserType.USER;
     private LocalDateTime regDt;
     private LocalDateTime modDt;
