@@ -49,5 +49,4 @@
             <jsp:doBody />
         </section>
     </jsp:body>
-
 </layout:common>
