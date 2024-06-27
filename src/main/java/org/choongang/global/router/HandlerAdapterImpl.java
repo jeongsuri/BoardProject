@@ -5,6 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.choongang.global.advices.HandlerControllerAdvice;
 import org.choongang.global.config.annotations.*;
 import org.choongang.global.config.containers.BeanContainer;
@@ -38,7 +39,7 @@ public class HandlerAdapterImpl implements HandlerAdapter {
     public void execute(HttpServletRequest request, HttpServletResponse response, List<Object> data) throws Exception {
 
         Object controller = data.get(0); // 컨트롤러 객체
-        Method method = (Method) data.get(1); // 찾은 요청 메서드
+        Method method = (Method)data.get(1); // 찾은 요청 메서드
 
         String m = request.getMethod().toUpperCase(); // 요청 메서드
         Annotation[] annotations = method.getDeclaredAnnotations();
@@ -67,8 +68,7 @@ public class HandlerAdapterImpl implements HandlerAdapter {
                     matched.add(matcher.group(1));
                 }
 
-                if (matched.isEmpty()) continue;
-                ;
+                if (matched.isEmpty()) continue;;
 
                 for (String rUrl : rootUrls) {
                     String _url = request.getContextPath() + rUrl + url;
@@ -76,7 +76,7 @@ public class HandlerAdapterImpl implements HandlerAdapter {
                         _url = _url.replace("{" + s + "}", "(\\w*)");
                     }
 
-                    Pattern p2 = Pattern.compile("^" + _url + "$");
+                    Pattern p2 = Pattern.compile("^" + _url+"$");
                     Matcher matcher2 = p2.matcher(request.getRequestURI());
                     while (matcher2.find()) {
                         for (int i = 0; i < matched.size(); i++) {
@@ -106,14 +106,16 @@ public class HandlerAdapterImpl implements HandlerAdapter {
                 }
             }
 
-            if (cls == int.class || cls == Integer.class || cls == long.class || cls == Long.class || cls == double.class || cls == Double.class || cls == float.class || cls == Float.class) {
-                paramValue = paramValue == null || paramValue.isBlank() ? "0" : paramValue;
+            if (cls == int.class || cls == Integer.class || cls == long.class || cls == Long.class || cls == double.class || cls == Double.class ||  cls == float.class || cls == Float.class) {
+                paramValue = paramValue == null || paramValue.isBlank()?"0":paramValue;
             }
 
             if (cls == HttpServletRequest.class) {
                 args.add(request);
             } else if (cls == HttpServletResponse.class) {
                 args.add(response);
+            } else if (cls == HttpSession.class) {
+                args.add(BeanContainer.getInstance().getBean(HttpSession.class));
             } else if (cls == int.class) {
                 args.add(Integer.parseInt(paramValue));
             } else if (cls == Integer.class) {
@@ -150,7 +152,7 @@ public class HandlerAdapterImpl implements HandlerAdapter {
 
                     Class clz = _method.getParameterTypes()[0];
                     // 자료형 변환 후 메서드 호출 처리
-                    invokeMethod(paramObj, _method, value, clz, name);
+                    invokeMethod(paramObj,_method, value, clz, name);
                 }
                 args.add(paramObj);
             } // endif
@@ -160,7 +162,9 @@ public class HandlerAdapterImpl implements HandlerAdapter {
         /* 요청 메서드 호출 S */
 
         // controller 적용 범위  Advice 처리
-        handlerControllerAdvice.handle(controller);
+        boolean isContinue = handlerControllerAdvice.handle(controller);
+        if(!isContinue) {//컨트롤러 메서드 실행x
+        }
 
         Object result = method.invoke(controller, args.toArray());
 
@@ -178,6 +182,14 @@ public class HandlerAdapterImpl implements HandlerAdapter {
             return;
         }
 
+        // 일반 컨트롤러인 경우 문자열이 redirect:로 시작하면 페이지 이동
+        String returnValue = (String)result;
+        if (returnValue.startsWith("redirect:")) {
+            String redirectUrl = returnValue.replace("redirect:", request.getContextPath());
+            response.sendRedirect(redirectUrl);
+            return;
+        }
+
         // 일반 컨트롤러인 경우 문자열 반환값을 템플릿 경로로 사용
         String tpl = "/WEB-INF/templates/" + result + ".jsp";
         RequestDispatcher rd = request.getRequestDispatcher(tpl);
@@ -192,7 +204,7 @@ public class HandlerAdapterImpl implements HandlerAdapter {
      * @param method
      * @param value
      * @param clz
-     * @param fieldNm  - 멤버변수명
+     * @param fieldNm - 멤버변수명
      */
     private void invokeMethod(Object paramObj, Method method, String value, Class clz, String fieldNm) {
         try {
@@ -264,7 +276,7 @@ public class HandlerAdapterImpl implements HandlerAdapter {
     private String[] getMappingUrl(String method, Annotation anno) {
 
         // RequestMapping은 모든 요청에 해당하므로 정의되어 있다면 이 설정으로 교체하고 반환한다.
-        if (anno instanceof RequestMapping) {
+        if (anno instanceof  RequestMapping) {
             RequestMapping mapping = (RequestMapping) anno;
             return mapping.value();
         }

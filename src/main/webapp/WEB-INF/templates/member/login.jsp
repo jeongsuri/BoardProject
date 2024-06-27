@@ -12,6 +12,9 @@
 <%--    내부 레이아웃 맨위 제목    --%>
         <h1>${pageTitle}</h1>
         <form name="frmLogin" method="POST" action="${actionUrl}" target="ifrmProcess" autocomplete="off">
+            <c:if test="${! empty param.redirectUrl}">
+                <input type="hidden" name="redirectUrl" value="${param.redirectUrl}">
+            </c:if>
             <input type="text" name="email" placeholder="<fmt:message key="이메일"/>">
             <input type="password" name="password" placeholder="<fmt:message key="비밀번호"/>">
             <div class="save-email">

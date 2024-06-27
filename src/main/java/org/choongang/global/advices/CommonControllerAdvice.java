@@ -2,16 +2,32 @@ package org.choongang.global.advices;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.choongang.global.config.annotations.ControllerAdvice;
 import org.choongang.global.config.annotations.ModelAttribute;
 import org.choongang.global.exceptions.*;
+import org.choongang.member.MemberUtil;
+import org.choongang.member.entities.Member;
 
+@RequiredArgsConstructor
 @ControllerAdvice("org.choongang")
 public class CommonControllerAdvice {
 
-    @ModelAttribute("commonValue2")
-    public String commonValue() {
-        return "공통 값 속성 추가 테스트";
+    private final MemberUtil memberUtil;
+
+    @ModelAttribute
+    public boolean isLogin() {
+        return memberUtil.isLogin();
+    }
+
+    @ModelAttribute
+    public boolean isAdmin() {
+        return memberUtil.isAdmin();
+    }
+
+    @ModelAttribute
+    public Member loggedMember() {
+        return memberUtil.getMember();
     }
 
     /**
@@ -51,8 +67,8 @@ public class CommonControllerAdvice {
                 request.setAttribute("script", sb.toString());
                 return "commons/execute_script";
             }
-        }else{
-            //CommonEcxption으로 정으한 예외가 아닌 경우 - 응답코드 500
+        } else {
+            // CommonException으로 정의한 예외가 아닌 경우 - 응답 코드 500
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
